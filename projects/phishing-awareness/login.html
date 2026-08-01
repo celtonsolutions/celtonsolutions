@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login | Celton Solutions</title>
+<style>
+  :root{
+    --accent:#0077B6;
+    --accent-dark:#005f8e;
+    --dark:#2b2f33;
+    --grey:#6b7280;
+    --light-grey:#f4f6f8;
+    --white:#ffffff;
+    --error:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--light-grey);
+    color:var(--dark);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .wrapper{
+    width:100%;
+    max-width:420px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:26px;
+  }
+  .logo-badge{
+    width:38px;height:38px;
+    background:var(--accent);
+    border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:1rem;
+  }
+  .brand span{font-weight:700;font-size:1.25rem;}
+
+  .card{
+    background:var(--white);
+    border-radius:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,.07);
+    border:1px solid #eaeaea;
+    padding:36px 32px;
+    position:relative;
+    min-height:420px;
+  }
+  h2{
+    font-size:1.5rem;
+    margin-bottom:6px;
+    text-align:center;
+  }
+  .subtitle{
+    text-align:center;
+    color:var(--grey);
+    font-size:.9rem;
+    margin-bottom:26px;
+  }
+  .toggle-row{
+    display:flex;
+    background:var(--light-grey);
+    border-radius:10px;
+    padding:4px;
+    margin-bottom:26px;
+  }
+  .toggle-row button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px 0;
+    border-radius:8px;
+    font-weight:700;
+    font-size:.9rem;
+    color:var(--grey);
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .toggle-row button.active{
+    background:var(--accent);
+    color:#fff;
+    box-shadow:0 4px 10px rgba(0,119,182,.25);
+  }
+  form{display:flex;flex-direction:column;gap:16px;}
+  label{
+    font-size:.82rem;
+    font-weight:600;
+    color:var(--dark);
+    margin-bottom:-8px;
+  }
+  input{
+    padding:12px 14px;
+    border-radius:9px;
+    border:1.5px solid #dcdfe3;
+    font-size:.95rem;
+    outline:none;
+    transition:border-color .2s ease;
+    font-family:inherit;
+  }
+  input:focus{border-color:var(--accent);}
+  .submit-btn{
+    margin-top:6px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:13px;
+    border-radius:9px;
+    font-weight:700;
+    font-size:.98rem;
+    cursor:pointer;
+    transition:background .2s ease, transform .15s ease;
+  }
+  .submit-btn:hover{background:var(--accent-dark);transform:translateY(-1px);}
+  .submit-btn:disabled{background:#a9c9d9;cursor:not-allowed;transform:none;}
+
+  .msg{
+    margin-top:14px;
+    font-size:.85rem;
+    text-align:center;
+    padding:10px;
+    border-radius:8px;
+    display:none;
+  }
+  .msg.error{
+    display:block;
+    background:#fdecea;
+    color:var(--error);
+  }
+  .msg.success{
+    display:block;
+    background:#e6f6ec;
+    color:#1e7e34;
+  }
+
+  .back-link{
+    display:block;
+    text-align:center;
+    margin-top:20px;
+    color:var(--grey);
+    text-decoration:none;
+    font-size:.85rem;
+  }
+  .back-link:hover{color:var(--accent);}
+
+  /* Loading spinner overlay */
+  .spinner-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(255,255,255,.85);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    z-index:999;
+  }
+  .spinner{
+    width:46px;height:46px;
+    border:4px solid #dbe7ee;
+    border-top-color:var(--accent);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to { transform:rotate(360deg); } }
+  .spinner-overlay p{
+    color:var(--grey);
+    font-size:.9rem;
+    font-weight:600;
+  }
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+  <!-- Loading spinner shown while Firebase initializes -->
+  <div class="spinner-overlay" id="initSpinner">
+    <div class="spinner"></div>
+    <p>Connecting to Celton Solutions...</p>
+  </div>
+
+  <div class="wrapper">
+    <div class="brand">
+      <div class="logo-badge">CS</div>
+      <span>Celton Solutions</span>
+    </div>
+
+    <div class="card">
+      <h2 id="formTitle">Welcome back</h2>
+      <p class="subtitle" id="formSubtitle">Log in to continue your training</p>
+
+      <div class="toggle-row">
+        <button id="loginTabBtn" class="active" onclick="switchTab('login')">Login</button>
+        <button id="signupTabBtn" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="you@company.com" required />
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required />
+        <button type="submit" class="submit-btn" id="loginBtn">Log In</button>
+      </form>
+
+      <!-- SIGNUP FORM (hidden by default) -->
+      <form id="signupForm" class="hidden">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" placeholder="you@company.com" required />
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" placeholder="Minimum 6 characters" required minlength="6" />
+        <button type="submit" class="submit-btn" id="signupBtn">Create Account</button>
+      </form>
+
+      <div class="msg" id="msgBox"></div>
+    </div>
+
+    <a href="index.html" class="back-link">&larr; Back to home</a>
+  </div>
+
+  <!-- ============ FIREBASE SDK (v9 compat) ============ -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ============================================================
+    // FIREBASE CONFIGURATION — replace with your own project config
+    // Get this from: Firebase Console > Project Settings > General
+    // ============================================================
+   const firebaseConfig = {
+    apiKey: "AIzaSyAyRNaGtcqIU7gruWqGimqepET-5gq4bTk",
+    authDomain: "celton-solutions.firebaseapp.com",
+    projectId: "celton-solutions",
+    storageBucket: "celton-solutions.firebasestorage.app",
+    messagingSenderId: "952487744025",
+    appId: "1:952487744025:web:454e4a4575f6d35a281088",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Hide the spinner once Firebase SDK has loaded / initialized
+    window.addEventListener('load', () => {
+      document.getElementById('initSpinner').classList.add('hidden');
+    });
+
+    // If a user is already authenticated, skip straight to the app
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        window.location.href = "app.html";
+      }
+    });
+
+    // ============================================================
+    // TAB SWITCHING (Login <-> Sign Up)
+    // ============================================================
+    function switchTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const loginTabBtn = document.getElementById('loginTabBtn');
+      const signupTabBtn = document.getElementById('signupTabBtn');
+      const formTitle = document.getElementById('formTitle');
+      const formSubtitle = document.getElementById('formSubtitle');
+      const msgBox = document.getElementById('msgBox');
+
+      msgBox.className = 'msg'; // clear message
+      msgBox.textContent = '';
+
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        loginTabBtn.classList.add('active');
+        signupTabBtn.classList.remove('active');
+        formTitle.textContent = 'Welcome back';
+        formSubtitle.textContent = 'Log in to continue your training';
+      } else {
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+        loginTabBtn.classList.remove('active');
+        signupTabBtn.classList.add('active');
+        formTitle.textContent = 'Create your account';
+        formSubtitle.textContent = 'Join the phishing awareness program';
+      }
+    }
+
+    // ============================================================
+    // HELPER: show a message (error or success)
+    // ============================================================
+    function showMessage(text, type) {
+      const msgBox = document.getElementById('msgBox');
+      msgBox.textContent = text;
+      msgBox.className = 'msg ' + type;
+    }
+
+    // Friendly error messages for common Firebase auth error codes
+    function friendlyError(error) {
+      const map = {
+        'auth/invalid-email': 'Please enter a valid email address.',
+        'auth/user-not-found': 'No account found with that email.',
+        'auth/wrong-password': 'Incorrect password. Please try again.',
+        'auth/email-already-in-use': 'An account with this email already exists.',
+        'auth/weak-password': 'Password should be at least 6 characters.',
+        'auth/invalid-credential': 'Invalid email or password.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.'
+      };
+      return map[error.code] || error.message;
+    }
+
+    // ============================================================
+    // LOGIN FORM SUBMISSION
+    // ============================================================
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+
+      btn.disabled = true;
+      btn.textContent = 'Logging in...';
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        showMessage('Login successful! Redirecting...', 'success');
+        window.location.href = "app.html";
+      } catch (error) {
+        showMessage(friendlyError(error), 'error');
+        btn.disabled = false;
+        btn.textContent = 'Log In';
+      }
+    });
+
+    // ============================================================
+    // SIGN UP FORM SUBMISSION
+    // ============================================================
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const btn = document.getElementById('signupBtn');
+
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+
+        // Initialize the user's Firestore document with a starting score of 0
+        await db.collection('users').doc(cred.user.uid).set({
+          email: email,
+          score: 0,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        showMessage('Account created! Redirecting...', 'success');
+        window.location.href = "app.html";
+      } catch (error) {
+        showMessage(friendlyError(error), 'error');
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+
+</body>
+</html>
