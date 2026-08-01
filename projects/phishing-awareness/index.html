@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Celton Solutions | Phishing Awareness Training</title>
+<style>
+  :root{
+    --gold:#b8860b;
+    --gold-dark:#8a660a;
+    --gold-light:#d4a017;
+    --cream:#faf6ee;
+    --cream-card:#fffdf8;
+    --cream-border:#e9e0cd;
+    --ink:#2e2a24;
+    --grey:#8a8272;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Google Sans','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    animation:pageFade .5s ease;
+  }
+  @keyframes pageFade{from{opacity:0;}to{opacity:1;}}
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(16px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+
+  /* ======= HEADER ======= */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 6%;
+    border-bottom:1px solid var(--cream-border);
+    background:var(--cream-card);
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    font-weight:600;
+    font-size:1.1rem;
+    color:var(--ink);
+  }
+  .logo-badge{
+    width:36px;height:36px;
+    background:var(--gold);
+    border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:.9rem;
+    letter-spacing:.02em;
+  }
+  nav a{
+    text-decoration:none;
+    color:#fff;
+    font-weight:600;
+    font-size:.88rem;
+    background:var(--gold);
+    padding:10px 22px;
+    border-radius:8px;
+    transition:background .18s ease,transform .15s ease;
+  }
+  nav a:hover{background:var(--gold-dark);transform:translateY(-1px);}
+
+  /* ======= HERO ======= */
+  .hero{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    padding:90px 6% 80px 6%;
+    gap:48px;
+  }
+  .hero-text{max-width:540px;animation:fadeUp .6s ease;}
+  .pill{
+    display:inline-block;
+    background:#f4e8cb;
+    color:var(--gold-dark);
+    font-size:.72rem;
+    font-weight:700;
+    padding:6px 14px;
+    border-radius:20px;
+    margin-bottom:20px;
+    letter-spacing:.06em;
+    border:1px solid #ecd9a8;
+  }
+  h1{
+    font-size:2.5rem;
+    color:var(--ink);
+    margin-bottom:18px;
+    line-height:1.2;
+    font-weight:600;
+  }
+  h1 span{color:var(--gold);}
+  .hero-text p{
+    color:var(--grey);
+    font-size:1rem;
+    margin-bottom:32px;
+    max-width:480px;
+  }
+  .cta-group{display:flex;gap:14px;flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--gold);
+    color:#fff;
+    padding:13px 28px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+    font-size:.95rem;
+    transition:background .18s ease,transform .15s ease;
+  }
+  .btn-primary:hover{background:var(--gold-dark);transform:translateY(-2px);}
+  .btn-secondary{
+    background:transparent;
+    color:var(--ink);
+    padding:13px 28px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+    font-size:.95rem;
+    border:1px solid var(--cream-border);
+    transition:border-color .18s ease,color .18s ease,transform .15s ease;
+  }
+  .btn-secondary:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px);}
+
+  /* ======= VISUAL CARD ======= */
+  .hero-visual{
+    width:360px;
+    max-width:100%;
+    background:var(--cream-card);
+    border-radius:16px;
+    border:1px solid var(--cream-border);
+    padding:22px;
+    animation:fadeUp .6s ease .1s both;
+    box-shadow:0 4px 20px rgba(184,134,11,.07);
+    transition:transform .25s ease;
+  }
+  .hero-visual:hover{transform:translateY(-4px);}
+  .visual-label{
+    font-size:.7rem;
+    font-weight:700;
+    color:var(--grey);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:14px;
+  }
+  .fake-email{
+    border:1px solid var(--cream-border);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .fake-email .bar{
+    background:#f6f1e4;
+    padding:10px 14px;
+    font-size:.74rem;
+    color:var(--grey);
+    display:flex;
+    justify-content:space-between;
+  }
+  .fake-email .body{padding:16px 14px;font-size:.84rem;color:var(--ink);line-height:1.6;}
+  .fake-email .body .addr{color:var(--gold-dark);font-weight:600;}
+  .flag{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:#fbeeeb;
+    color:#b3402c;
+    font-size:.7rem;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:6px;
+    margin-top:11px;
+    border:1px solid #edc4bb;
+  }
+
+  /* ======= FEATURES ======= */
+  section.features{
+    padding:70px 6% 80px 6%;
+    border-top:1px solid var(--cream-border);
+  }
+  section.features h2{
+    text-align:center;
+    font-size:1.75rem;
+    font-weight:600;
+    margin-bottom:10px;
+    color:var(--ink);
+  }
+  section.features p.sub{
+    text-align:center;
+    color:var(--grey);
+    max-width:520px;
+    margin:0 auto 46px auto;
+    font-size:.95rem;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:22px;
+    max-width:860px;
+    margin:0 auto;
+  }
+  .card{
+    background:var(--cream-card);
+    border-radius:14px;
+    padding:28px 24px;
+    border:1px solid var(--cream-border);
+    transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+    animation:fadeUp .5s ease both;
+  }
+  .card:nth-child(2){animation-delay:.08s;}
+  .card:nth-child(3){animation-delay:.16s;}
+  .card:hover{
+    transform:translateY(-4px);
+    border-color:var(--gold);
+    box-shadow:0 6px 20px rgba(184,134,11,.08);
+  }
+  .card .icon{
+    width:42px;height:42px;
+    background:var(--gold);
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:1.2rem;
+    margin-bottom:16px;
+  }
+  .card h3{font-size:1rem;font-weight:600;margin-bottom:8px;color:var(--ink);}
+  .card p{color:var(--grey);font-size:.88rem;line-height:1.6;}
+
+  /* ======= STATS STRIP ======= */
+  .stats{
+    background:#f4e8cb;
+    border-top:1px solid #ecd9a8;
+    border-bottom:1px solid #ecd9a8;
+    padding:36px 6%;
+    display:flex;
+    justify-content:center;
+    gap:60px;
+    flex-wrap:wrap;
+  }
+  .stat{text-align:center;}
+  .stat .num{font-size:2rem;font-weight:700;color:var(--gold-dark);line-height:1;}
+  .stat .lbl{font-size:.8rem;color:var(--grey);margin-top:5px;}
+
+  /* ======= FOOTER ======= */
+  footer{
+    text-align:center;
+    padding:28px 6%;
+    color:var(--grey);
+    font-size:.82rem;
+    border-top:1px solid var(--cream-border);
+    background:var(--cream-card);
+  }
+
+  @media(max-width:720px){
+    h1{font-size:2rem;}
+    .hero{padding:60px 6%;}
+    .stats{gap:36px;}
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-badge">CS</div>
+      Celton Solutions
+    </div>
+    <nav>
+      <a href="login.html">Login / Sign Up</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <span class="pill">SECURITY AWARENESS TRAINING</span>
+      <h1>Learn to spot <span>phishing</span><br>before it costs you.</h1>
+      <p>
+        Celton Solutions' interactive training helps employees recognise deceptive emails,
+        SMS messages, and phone calls through realistic, hands-on scenarios —
+        building instinctive, everyday vigilance.
+      </p>
+      <div class="cta-group">
+        <a href="login.html" class="btn-primary">Start Training</a>
+        <a href="#features" class="btn-secondary">Learn More</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="visual-label">Example scenario</div>
+      <div class="fake-email">
+        <div class="bar">
+          <span>Inbox</span>
+          <span>Just now</span>
+        </div>
+        <div class="body">
+          <span class="addr">IT-Support@ce1ton-solutions.com</span><br><br>
+          "Your network password expires in 60 minutes. Click below to keep access or your account will be suspended."
+          <div class="flag">⚠ Suspicious sender domain</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num">9</div>
+      <div class="lbl">Scenarios across 3 channels</div>
+    </div>
+    <div class="stat">
+      <div class="num">3</div>
+      <div class="lbl">Attack types covered</div>
+    </div>
+    <div class="stat">
+      <div class="num">~5 min</div>
+      <div class="lbl">Per category</div>
+    </div>
+  </div>
+
+  <section class="features" id="features">
+    <h2>Train across every channel</h2>
+    <p class="sub">Attackers don't just use email. Our game covers the three most common phishing vectors employees face today.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">✉</div>
+        <h3>Email Phishing</h3>
+        <p>Spot spoofed domains, urgent language, and social-engineering tactics in realistic inbox simulations.</p>
+      </div>
+      <div class="card">
+        <div class="icon">💬</div>
+        <h3>SMS Smishing</h3>
+        <p>Identify fraudulent text messages impersonating IT, banks, delivery services, and colleagues.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📞</div>
+        <h3>Voice Phishing</h3>
+        <p>Recognise social engineering tactics in vishing calls and convincing impersonation scenarios.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 Celton Solutions. All rights reserved. Internal Security Awareness Program.
+  </footer>
+
+</body>
+</html>
