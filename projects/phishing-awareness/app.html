@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Phishing Awareness Game | Celton Solutions</title>
+<style>
+  :root{
+    --gold:#b8860b;
+    --gold-dark:#8a660a;
+    --gold-light:#d4a017;
+    --cream:#faf6ee;
+    --cream-card:#fffdf8;
+    --cream-border:#e9e0cd;
+    --ink:#2e2a24;
+    --grey:#8a8272;
+    --success:#2e7d4f;
+    --success-bg:#eef7f0;
+    --error:#b3402c;
+    --error-bg:#fbeeeb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Google Sans','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ============ SPINNER OVERLAY ============ */
+  .spinner-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(250,246,238,.95);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    z-index:999;
+  }
+  .spinner{
+    width:40px;height:40px;
+    border:3px solid #ecdfc2;
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to { transform:rotate(360deg); } }
+  .spinner-overlay p{color:var(--grey);font-size:.85rem;font-weight:500;}
+  .hidden{display:none !important;}
+
+  /* ============ HEADER ============ */
+  header{
+    background:var(--cream-card);
+    border-bottom:1px solid var(--cream-border);
+    padding:18px 6%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo-badge{
+    width:38px;height:38px;
+    background:var(--gold);
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:.95rem;
+    letter-spacing:.02em;
+  }
+  .brand-text{display:flex;flex-direction:column;line-height:1.15;}
+  .brand-text b{font-size:1.02rem;font-weight:600;color:var(--ink);}
+  .brand-text span{font-size:.72rem;color:var(--grey);}
+
+  .user-area{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .score-pill{
+    background:#f4e8cb;
+    color:var(--gold-dark);
+    font-weight:600;
+    font-size:.82rem;
+    padding:7px 16px;
+    border-radius:20px;
+    border:1px solid #ecd9a8;
+  }
+  .level-pill{
+    background:#e9f1ff;
+    color:#2a5db0;
+    font-weight:600;
+    font-size:.82rem;
+    padding:7px 16px;
+    border-radius:20px;
+    border:1px solid #cfe0fb;
+  }
+  .user-email{
+    font-size:.82rem;
+    color:var(--grey);
+  }
+  .icon-btn{
+    background:transparent;
+    border:1px solid var(--cream-border);
+    color:var(--ink);
+    padding:7px 12px;
+    border-radius:8px;
+    font-weight:500;
+    font-size:.82rem;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .icon-btn:hover{border-color:var(--gold);color:var(--gold-dark);}
+  .logout-btn{
+    background:transparent;
+    border:1px solid var(--cream-border);
+    color:var(--ink);
+    padding:7px 16px;
+    border-radius:8px;
+    font-weight:500;
+    font-size:.82rem;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .logout-btn:hover{border-color:var(--error);color:var(--error);}
+
+  /* ============ MAIN CONTAINER ============ */
+  main{
+    max-width:760px;
+    margin:0 auto;
+    padding:48px 5% 90px 5%;
+  }
+  .intro{
+    text-align:center;
+    margin-bottom:36px;
+  }
+  .intro h1{
+    font-size:1.6rem;
+    font-weight:600;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .intro p{
+    color:var(--grey);
+    font-size:.92rem;
+  }
+
+  /* ============ TABS ============ */
+  .tabs{
+    display:flex;
+    background:var(--cream-card);
+    border:1px solid var(--cream-border);
+    border-radius:12px;
+    padding:5px;
+    margin-bottom:16px;
+    gap:5px;
+  }
+  .tab-btn{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:11px 0;
+    border-radius:8px;
+    font-weight:600;
+    font-size:.9rem;
+    color:var(--grey);
+    cursor:pointer;
+    transition:all .18s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+  }
+  .tab-btn.active{
+    background:var(--gold);
+    color:#fff;
+  }
+
+  /* ============ PROGRESS BAR ============ */
+  .progress-wrap{
+    margin-bottom:22px;
+  }
+  .progress-track{
+    background:#eee3c8;
+    border-radius:10px;
+    height:8px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    background:var(--gold);
+    height:100%;
+    border-radius:10px;
+    transition:width .3s ease;
+    width:0%;
+  }
+  .progress-label{
+    font-size:.72rem;
+    color:var(--grey);
+    font-weight:600;
+    margin-top:6px;
+    display:flex;
+    justify-content:space-between;
+  }
+
+  /* ============ SCENARIO CARD ============ */
+  .scenario-card{
+    background:var(--cream-card);
+    border:1px solid var(--cream-border);
+    border-radius:14px;
+    padding:30px;
+    box-shadow:0 2px 10px rgba(184,134,11,.05);
+    position:relative;
+    min-height:180px;
+  }
+  .scenario-progress{
+    font-size:.74rem;
+    color:var(--grey);
+    font-weight:600;
+    margin-bottom:16px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+  .difficulty-badge{
+    display:inline-block;
+    font-size:.68rem;
+    font-weight:700;
+    padding:3px 9px;
+    border-radius:20px;
+    margin-left:8px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    vertical-align:middle;
+  }
+  .difficulty-badge.easy{background:#eef7f0;color:var(--success);}
+  .difficulty-badge.medium{background:#f4e8cb;color:var(--gold-dark);}
+  .difficulty-badge.hard{background:#fbeeeb;color:var(--error);}
+  .difficulty-badge.tricky{background:#f4e8cb;color:var(--gold-dark);}
+  .difficulty-badge.expert{background:#f1e6fb;color:#7a3fc4;}
+
+  .ai-badge{
+    display:inline-block;
+    font-size:.66rem;
+    font-weight:700;
+    padding:3px 9px;
+    border-radius:20px;
+    margin-left:8px;
+    background:#e9f1ff;
+    color:#2a5db0;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    vertical-align:middle;
+  }
+
+  /* Email formatting */
+  .email-box{
+    border:1px solid var(--cream-border);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  .email-box .meta{
+    background:#f6f1e4;
+    padding:14px 18px;
+    font-size:.84rem;
+  }
+  .email-box .meta div{margin-bottom:3px;}
+  .email-box .meta b{color:var(--ink);}
+  .email-box .meta .from-addr{color:var(--grey);}
+  .email-box .content{
+    padding:20px 18px;
+    font-size:.9rem;
+    line-height:1.7;
+    color:var(--ink);
+  }
+  .email-box .content .btn-fake{
+    display:inline-block;
+    background:var(--gold);
+    color:#fff;
+    padding:8px 18px;
+    border-radius:6px;
+    margin-top:10px;
+    font-size:.84rem;
+    font-weight:600;
+  }
+
+  /* SMS formatting */
+  .sms-frame{
+    background:#f6f1e4;
+    border-radius:14px;
+    padding:24px 16px;
+    margin-bottom:22px;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .sms-sender{
+    font-size:.76rem;
+    color:var(--grey);
+    font-weight:600;
+    margin-bottom:8px;
+    margin-left:6px;
+  }
+  .sms-bubble{
+    background:#eae2cd;
+    color:var(--ink);
+    padding:12px 16px;
+    border-radius:18px;
+    border-bottom-left-radius:4px;
+    font-size:.9rem;
+    max-width:88%;
+    line-height:1.5;
+  }
+
+  /* Call transcript formatting */
+  .call-frame{
+    background:#2e2a24;
+    color:#efe8d8;
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:22px;
+    font-family:'Courier New', monospace;
+    font-size:.86rem;
+    line-height:1.8;
+  }
+  .call-frame .caller-info{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+    padding-bottom:12px;
+    border-bottom:1px solid #4a453b;
+    font-family:'Google Sans','Segoe UI',Roboto,sans-serif;
+  }
+  .call-frame .caller-info .dot{
+    width:9px;height:9px;
+    background:var(--gold-light);
+    border-radius:50%;
+  }
+  .call-frame .line{margin-bottom:6px;}
+  .call-frame .line b{color:#e0c374;}
+
+  /* Answer buttons */
+  .answer-row{
+    display:flex;
+    gap:12px;
+    margin-top:6px;
+  }
+  .answer-btn{
+    flex:1;
+    padding:13px 0;
+    border-radius:10px;
+    font-weight:600;
+    font-size:.92rem;
+    cursor:pointer;
+    border:1px solid var(--cream-border);
+    background:var(--cream-card);
+    color:var(--ink);
+    transition:all .15s ease;
+  }
+  .answer-btn:hover:not(:disabled){
+    transform:translateY(-1px);
+    box-shadow:0 4px 10px rgba(0,0,0,.04);
+  }
+  .answer-btn.real{border-color:#bcdcc7; color:var(--success);}
+  .answer-btn.fake{border-color:#e8c1b8; color:var(--error);}
+  .answer-btn:disabled{opacity:.5; cursor:not-allowed; transform:none;}
+
+  /* Result / explanation card */
+  .result-card{
+    margin-top:22px;
+    padding:18px 20px;
+    border-radius:12px;
+    display:none;
+    animation:fadeIn .3s ease;
+  }
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .result-card.correct{
+    background:var(--success-bg);
+    border:1px solid #bfe0cb;
+    display:block;
+  }
+  .result-card.incorrect{
+    background:var(--error-bg);
+    border:1px solid #edc4bb;
+    display:block;
+  }
+  .result-card .verdict{
+    font-weight:700;
+    font-size:.92rem;
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .result-card.correct .verdict{color:var(--success);}
+  .result-card.incorrect .verdict{color:var(--error);}
+  .result-card .explanation{
+    font-size:.86rem;
+    color:var(--ink);
+    line-height:1.65;
+  }
+
+  .next-btn{
+    margin-top:18px;
+    width:100%;
+    background:var(--gold);
+    color:#fff;
+    border:none;
+    padding:13px 0;
+    border-radius:10px;
+    font-weight:600;
+    font-size:.92rem;
+    cursor:pointer;
+    transition:background .2s ease;
+    display:none;
+  }
+  .next-btn:hover{background:var(--gold-dark);}
+  .next-btn:disabled{opacity:.6;cursor:not-allowed;}
+
+  .done-card{
+    text-align:center;
+    padding:44px 20px;
+    display:none;
+  }
+  .done-card h2{margin-bottom:10px; font-weight:600;}
+  .done-card p{color:var(--grey); margin-bottom:20px;}
+  .done-card .level-result{
+    font-weight:700;
+    font-size:1.05rem;
+    margin-bottom:14px;
+  }
+  .done-card .level-result.pass{color:var(--success);}
+  .done-card .level-result.fail{color:var(--error);}
+  .restart-btn{
+    background:var(--gold);
+    color:#fff;
+    border:none;
+    padding:12px 28px;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  .inline-loading{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    padding:50px 0;
+    color:var(--grey);
+    font-size:.88rem;
+  }
+  .inline-spinner{
+    width:22px;height:22px;
+    border:3px solid #ecdfc2;
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+
+  /* ============ SETTINGS MODAL ============ */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(46,42,36,.45);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+    padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--cream-card);
+    border-radius:14px;
+    padding:28px;
+    max-width:420px;
+    width:100%;
+    box-shadow:0 10px 40px rgba(0,0,0,.15);
+  }
+  .modal-box h3{font-size:1.1rem;margin-bottom:6px;}
+  .modal-box p{font-size:.82rem;color:var(--grey);margin-bottom:16px;line-height:1.5;}
+  .modal-box label{font-size:.78rem;font-weight:600;color:var(--ink);display:block;margin-bottom:6px;}
+  .modal-box input[type="password"], .modal-box input[type="text"]{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--cream-border);
+    border-radius:8px;
+    font-size:.88rem;
+    margin-bottom:14px;
+    font-family:inherit;
+  }
+  .modal-box input:focus{outline:none;border-color:var(--gold);}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+  .modal-btn-secondary{
+    background:transparent;
+    border:1px solid var(--cream-border);
+    padding:9px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:500;
+    font-size:.85rem;
+  }
+  .modal-btn-primary{
+    background:var(--gold);
+    color:#fff;
+    border:none;
+    padding:9px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:.85rem;
+  }
+  .modal-status{
+    font-size:.78rem;
+    margin-top:-6px;
+    margin-bottom:12px;
+  }
+  .modal-status.ok{color:var(--success);}
+  .modal-status.err{color:var(--error);}
+
+  @media (max-width:600px){
+    .user-area{width:100%; justify-content:space-between;}
+    .tab-btn span.tab-label{display:none;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="spinner-overlay" id="authSpinner">
+    <div class="spinner"></div>
+    <p>Loading your training dashboard...</p>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="logo-badge">CS</div>
+      <div class="brand-text">
+        <b>Celton Solutions</b>
+        <span>Phishing Awareness Training</span>
+      </div>
+    </div>
+    <div class="user-area">
+      <span class="level-pill">Level <span id="levelDisplay">1</span></span>
+      <span class="score-pill">Score: <span id="scoreDisplay">0</span></span>
+      <span class="user-email" id="userEmailDisplay"></span>
+      <button class="logout-btn" id="logoutBtn">Log Out</button>
+    </div>
+  </header>
+
+  <main id="mainContent" class="hidden">
+    <div class="intro">
+      <h1>Can you spot the phish?</h1>
+      <p>Scenarios are freshly generated for your level — the further you get, the trickier they become.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-category="email" onclick="switchCategory('email')">
+        ✉ <span class="tab-label">Email</span>
+      </button>
+      <button class="tab-btn" data-category="sms" onclick="switchCategory('sms')">
+        💬 <span class="tab-label">SMS</span>
+      </button>
+      <button class="tab-btn" data-category="call" onclick="switchCategory('call')">
+        📞 <span class="tab-label">Call</span>
+      </button>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label">
+        <span id="progressLabel">Scenario 1 of 10</span>
+        <span id="progressScore">Correct: 0/10</span>
+      </div>
+    </div>
+
+    <div class="scenario-card" id="scenarioCard">
+      <div class="scenario-progress" id="scenarioProgress"></div>
+      <div id="scenarioContent"></div>
+
+      <div class="answer-row" id="answerRow">
+        <button class="answer-btn real" id="btnReal" onclick="submitAnswer('real')">Real</button>
+        <button class="answer-btn fake" id="btnFake" onclick="submitAnswer('fake')">Fake</button>
+      </div>
+
+      <div class="result-card" id="resultCard">
+        <div class="verdict" id="verdictText"></div>
+        <div class="explanation" id="explanationText"></div>
+      </div>
+
+      <button class="next-btn" id="nextBtn" onclick="nextScenario()">Next Scenario →</button>
+    </div>
+
+    <div class="done-card" id="doneCard">
+      <h2>Level Complete</h2>
+      <div class="level-result" id="levelResultText"></div>
+      <p id="doneText"></p>
+      <button class="restart-btn" onclick="restartCategory()">Play Again</button>
+    </div>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAyRNaGtcqIU7gruWqGimqepET-5gq4bTk",
+        authDomain: "celton-solutions.firebaseapp.com",
+        projectId: "celton-solutions",
+        storageBucket: "celton-solutions.firebasestorage.app",
+        messagingSenderId: "952487744025",
+        appId: "1:952487744025:web:454e4a4575f6d35a281088",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let currentScore = 0;
+
+    // Per-category level (1-5)
+    let levels = { email: 1, sms: 1, call: 1 };
+
+    const QUESTIONS_PER_LEVEL = 10;
+    const PASS_THRESHOLD = 0.7; // 70% correct to advance
+    const MAX_LEVEL = 5;
+    const DIFFICULTY_BY_LEVEL = { 1: "easy", 2: "medium", 3: "hard", 4: "tricky", 5: "expert" };
+
+    // ============================================================
+    // GROQ API KEY — paste your key below to enable AI-generated scenarios.
+    // Leave as an empty string to fall back to the built-in scenario bank.
+    // ============================================================
+    const GROQ_API_KEY = ""; // <-- put your Groq API key here, e.g. "gsk_xxxxxxxxxxxx"
+
+    const GROQ_MODEL = "llama-3.3-70b-versatile";
+    const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
+
+    function getGroqKey() {
+      return GROQ_API_KEY;
+    }
+
+    // ============================================================
+    // AUTH
+    // ============================================================
+    auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUser = user;
+      document.getElementById('userEmailDisplay').textContent = user.email;
+
+      try {
+        const docRef = db.collection('users').doc(user.uid);
+        const docSnap = await docRef.get();
+
+        if (docSnap.exists) {
+          const data = docSnap.data();
+          currentScore = data.score || 0;
+          if (data.levels) levels = Object.assign(levels, data.levels);
+        } else {
+          await docRef.set({ email: user.email, score: 0, levels });
+          currentScore = 0;
+        }
+        updateScoreDisplay();
+      } catch (err) {
+        console.error("Error loading progress:", err);
+      }
+
+      document.getElementById('authSpinner').classList.add('hidden');
+      document.getElementById('mainContent').classList.remove('hidden');
+
+      startLevelSession();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await auth.signOut();
+      window.location.href = "login.html";
+    });
+
+    function updateScoreDisplay() {
+      document.getElementById('scoreDisplay').textContent = currentScore;
+      document.getElementById('levelDisplay').textContent = levels[currentCategory] || 1;
+    }
+
+    async function incrementScore() {
+      currentScore += 1;
+      updateScoreDisplay();
+      persistProgress();
+    }
+
+    async function persistProgress() {
+      if (!currentUser) return;
+      try {
+        await db.collection('users').doc(currentUser.uid).set(
+          { score: currentScore, levels },
+          { merge: true }
+        );
+      } catch (err) {
+        console.error("Error saving progress:", err);
+      }
+    }
+
+    // ============================================================
+    // FALLBACK STATIC SCENARIOS (used when no AI key is set, or AI call fails)
+    // ============================================================
+    const fallbackScenarios = {
+      email: [
+        {
+          isReal: false, difficulty: "hard",
+          render: {
+            from: "Priya Nair — Finance", fromAddr: "p.nair@celtonsolutions.com",
+            subject: "Re: Updated wire instructions for Meridian Logistics",
+            body: `Hi,<br><br>Following up on our call earlier — Meridian has changed banks ahead of Friday's payment run. Could you update the vendor record with the new account details below before you process the batch?<br><br><b>Account Name:</b> Meridian Logistics Pvt Ltd<br><b>New Routing/Account:</b> attached in the secure PDF<br><br>I'm heading into back-to-back meetings, so please just confirm once it's updated rather than calling — I may not pick up.<br><br>Thanks,<br>Priya`
+          },
+          explanation: "Fake. The address itself looks legitimate, which is exactly the trap — this is likely a compromised or spoofed internal account. The real tell is the request pattern: a sudden vendor bank-detail change, urgency tied to a payment deadline, and an explicit instruction to avoid verifying by phone."
+        },
+        {
+          isReal: true, difficulty: "easy",
+          render: {
+            from: "Celton Solutions HR", fromAddr: "hr@celtonsolutions.com",
+            subject: "Reminder: Open Enrollment ends Friday",
+            body: `Hi team,<br><br>This is a reminder that open enrollment for benefits closes this <b>Friday at 5:00 PM</b>. Please log into the HR portal directly at <b>portal.celtonsolutions.com</b> (type the address in yourself rather than clicking a link) to review or change your plan.<br><br>Questions can go to your HR representative or the HR office on the 3rd floor.<br><br>Thanks,<br>Celton Solutions HR Team`
+          },
+          explanation: "Real. The domain matches the company exactly, there's no embedded action link, and it offers an in-person, verifiable point of contact."
+        },
+        {
+          isReal: false, difficulty: "tricky",
+          render: {
+            from: "DocuSign", fromAddr: "no-reply@docusign.net",
+            subject: "Completed: NDA_CeltonSolutions_Q3_Partner.pdf",
+            body: `A document has been completed and is ready for your records.<br><br><b>Document:</b> NDA_CeltonSolutions_Q3_Partner.pdf<br><b>Completed by:</b> legal@celton-partners-legal.com<br><br><span class="btn-fake">View Completed Document</span><br><br>This link will expire in 24 hours for security purposes.`
+          },
+          explanation: "Fake. The sending domain is plausible-looking but not correct, and the 'completed by' party is an unfamiliar domain. Legitimate services rarely impose a rushed expiry."
+        }
+      ],
+      sms: [
+        {
+          isReal: false, difficulty: "hard",
+          render: { sender: "Celton Solutions", text: "Hi, this is Arjun from IT — we're rolling out MFA updates today. Reply with the 6-digit code you just received on your phone so I can confirm your device is enrolled correctly." },
+          explanation: "Fake. No legitimate MFA rollout ever needs you to relay a code back — that code authenticates a sign-in attempt made by the attacker."
+        },
+        {
+          isReal: true, difficulty: "easy",
+          render: { sender: "Celton Solutions", text: "Reminder: Your quarterly security training is due by Aug 15. Complete it anytime in the Learning Portal. No action needed if already done." },
+          explanation: "Real. No links, no urgency, no request for information or codes."
+        },
+        {
+          isReal: false, difficulty: "tricky",
+          render: { sender: "+1 (415) 555-0142", text: "Hi, it's David from the Chennai office — lost my company badge and can't reach facilities. Could you send me the guest wifi password for the 2nd floor when you get a sec?" },
+          explanation: "Fake. An unfamiliar number claiming to be a known-sounding but unverified colleague, requesting info routed around normal channels."
+        }
+      ],
+      call: [
+        {
+          isReal: false, difficulty: "hard",
+          render: {
+            callerName: "Celton Solutions IT Helpdesk", callerNumber: "Ext. 2210 (Internal)",
+            transcript: [
+              { speaker: "Caller", text: "Hi, this is Sarah again following up on the ticket about your monitor — while I have you, I also need to push a patch to your laptop remotely." },
+              { speaker: "You", text: "Oh, okay, sure." },
+              { speaker: "Caller", text: "Great — go ahead and open the remote access link I just texted you and enter the session code so I can connect." },
+              { speaker: "You", text: "One sec..." }
+            ]
+          },
+          explanation: "Fake. Legitimate IT patches are pushed silently through managed software, not by asking you to open a remote-access link mid-call."
+        },
+        {
+          isReal: true, difficulty: "easy",
+          render: {
+            callerName: "Celton Solutions IT Helpdesk", callerNumber: "Ext. 2210 (Internal)",
+            transcript: [
+              { speaker: "Caller", text: "Hi, this is Sarah from the IT Helpdesk following up on the ticket you submitted yesterday about your monitor." },
+              { speaker: "You", text: "Oh yes, thanks for calling." },
+              { speaker: "Caller", text: "I've ordered a replacement — it should arrive within 3 business days. I'll email you the tracking confirmation. No action needed on your end." },
+              { speaker: "You", text: "Great, thank you!" }
+            ]
+          },
+          explanation: "Real. Known internal extension, references a real ticket, no sensitive info requested, followed by a traceable email."
+        },
+        {
+          isReal: false, difficulty: "tricky",
+          render: {
+            callerName: "Vendor Compliance", callerNumber: "+1 (212) 555-0110",
+            transcript: [
+              { speaker: "Caller", text: "Hi, I'm calling from Meridian Logistics' compliance team — we're finalizing our annual vendor audit with Celton and need to confirm the primary approver for invoices over $10,000." },
+              { speaker: "You", text: "That would be our finance director." },
+              { speaker: "Caller", text: "Perfect, and just to speed up next quarter's audit, could you confirm their direct email and the invoice approval threshold in your system?" },
+              { speaker: "You", text: "Um, I think it's—" }
+            ]
+          },
+          explanation: "Fake. Sounds like a routine compliance check, but it's reconnaissance for a later invoice-fraud attempt. Legitimate audits go through your own procurement or finance leadership."
+        }
+      ]
+    };
+
+    // ============================================================
+    // AI SCENARIO GENERATION
+    // ============================================================
+    // Pretext/theme pools so the model can't fall back on the same shape every call.
+    const THEMES_BY_CATEGORY = {
+      email: [
+        "invoice or payment approval request", "password reset / account security alert",
+        "shared document or file-sharing notification", "shipping/delivery notification",
+        "IT system maintenance or software update notice", "expense reimbursement or payroll update",
+        "new hire or org-chart announcement", "software license or subscription renewal",
+        "calendar meeting invite or reschedule", "internal survey or company announcement",
+        "vendor onboarding or contract renewal", "executive request for gift cards or urgent favor"
+      ],
+      sms: [
+        "package delivery notification", "two-factor authentication code request",
+        "colleague asking for a quick favor", "bank or payment alert",
+        "IT asking to verify a login", "manager asking to reschedule a call",
+        "company survey or benefits reminder", "parking or facilities notice",
+        "conference/travel confirmation", "urgent request disguised as a known contact"
+      ],
+      call: [
+        "IT helpdesk following up on a ticket", "vendor or auditor requesting information",
+        "executive assistant relaying an urgent request", "bank or payment provider verification",
+        "new employee asking for onboarding help", "building security or facilities call",
+        "recruiter or HR follow-up", "software vendor renewal call",
+        "colleague locked out asking for access", "law enforcement or compliance impersonation"
+      ]
+    };
+
+    function pickTheme(category) {
+      const pool = THEMES_BY_CATEGORY[category];
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function buildPrompt(category, difficulty, forceIsReal, theme) {
+      const shapeByCategory = {
+        email: `"render": { "from": "Display Name", "fromAddr": "email@domain.com", "subject": "Subject line", "body": "HTML-formatted body, may use <br> and <b>" }`,
+        sms: `"render": { "sender": "Sender Name or Number", "text": "message text" }`,
+        call: `"render": { "callerName": "Caller Name/Team", "callerNumber": "Number or Ext.", "transcript": [ { "speaker": "Caller", "text": "..." }, { "speaker": "You", "text": "..." } ] }`
+      };
+
+      const realFakeInstruction = forceIsReal
+        ? `This scenario MUST be REAL (legitimate) — a genuine, benign communication with no malicious intent. It may include a minor distractor (slight urgency, an unfamiliar-sounding but real internal process) that a nervous employee might over-flag, but it must NOT be phishing.`
+        : `This scenario MUST be FAKE (phishing/social-engineering) — it must contain a genuine attack. At higher difficulty, make the red flags subtle: fewer obvious spelling errors or generic greetings, more plausible pretexting, believable sender identity, and a request that sounds like normal business rather than an obvious scam.`;
+
+      return `You are generating a single scenario for a corporate phishing-awareness training game for employees of a fictional company called "Celton Solutions".
+
+Category: ${category}
+Difficulty: ${difficulty}
+Pretext/theme to build this scenario around: ${theme}
+
+${realFakeInstruction}
+
+Vary names, departments, wording, tone, and structure from anything generic — do not reuse stock phrasing like "urgent action required" or "verify your account" unless the theme genuinely calls for it. Make it feel like a fresh, specific situation.
+
+Respond with ONLY a raw JSON object, no markdown fences, no commentary, matching exactly this shape:
+{
+  "isReal": ${forceIsReal ? "true" : "false"},
+  "difficulty": "${difficulty}",
+  ${shapeByCategory[category]},
+  "explanation": "2-4 sentences explaining what made this real or fake, written as employee-facing security training feedback."
+}
+
+Do not reference real companies, real people, or real phone numbers/domains other than the fictional "celtonsolutions.com" domain. Keep body/text content realistic in length for the medium.`;
+    }
+
+    async function generateAIScenario(category, difficulty, forceIsReal) {
+      const key = getGroqKey();
+      if (!key) return null;
+
+      const theme = pickTheme(category);
+
+      const res = await fetch(GROQ_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+        body: JSON.stringify({
+          model: GROQ_MODEL,
+          max_tokens: 900,
+          temperature: 1.05,
+          messages: [{ role: "user", content: buildPrompt(category, difficulty, forceIsReal, theme) }]
+        })
+      });
+
+      if (!res.ok) throw new Error("Groq API error " + res.status);
+      const data = await res.json();
+      let text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "";
+      text = text.trim().replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
+      const parsed = JSON.parse(text);
+      if (typeof parsed.isReal !== "boolean") throw new Error("Malformed AI response");
+      parsed.isReal = forceIsReal; // enforce ground truth regardless of what the model echoed back
+      return parsed;
+    }
+
+    function getFallbackScenario(category, index) {
+      const list = fallbackScenarios[category];
+      return list[index % list.length];
+    }
+
+    // ============================================================
+    // GAME STATE
+    // ============================================================
+    let currentCategory = 'email';
+    let currentIndex = 0;       // 0-9 within the 10-question level session
+    let sessionCorrect = 0;
+    let sessionScenarios = [];  // holds scenario objects as they're generated
+    let answered = false;
+
+    function difficultyForCurrent() {
+      const lvl = levels[currentCategory] || 1;
+      return DIFFICULTY_BY_LEVEL[Math.min(lvl, MAX_LEVEL)];
+    }
+
+    function startLevelSession() {
+      currentIndex = 0;
+      sessionCorrect = 0;
+      sessionScenarios = [];
+      document.getElementById('doneCard').style.display = 'none';
+      document.getElementById('scenarioCard').style.display = 'block';
+      updateScoreDisplay();
+      loadScenario(0);
+    }
+
+    async function loadScenario(index) {
+      updateProgressUI();
+      showInlineLoading(true);
+
+      const difficulty = difficultyForCurrent();
+      let scenario = null;
+
+      try {
+        scenario = await generateAIScenario(currentCategory, difficulty);
+      } catch (err) {
+        console.warn("AI generation failed, using fallback:", err.message);
+        scenario = null;
+      }
+
+      if (!scenario) {
+        scenario = getFallbackScenario(currentCategory, index);
+      } else {
+        scenario._aiGenerated = true;
+      }
+
+      sessionScenarios[index] = scenario;
+      showInlineLoading(false);
+      renderScenario();
+    }
+
+    function showInlineLoading(isLoading) {
+      const content = document.getElementById('scenarioContent');
+      const answerRow = document.getElementById('answerRow');
+      const resultCard = document.getElementById('resultCard');
+      const nextBtn = document.getElementById('nextBtn');
+      if (isLoading) {
+        content.innerHTML = `<div class="inline-loading"><div class="inline-spinner"></div><span>Generating a new scenario...</span></div>`;
+        answerRow.style.display = 'none';
+        resultCard.style.display = 'none';
+        resultCard.className = 'result-card';
+        nextBtn.style.display = 'none';
+      } else {
+        answerRow.style.display = 'flex';
+      }
+    }
+
+    function updateProgressUI() {
+      const pct = Math.round((currentIndex / QUESTIONS_PER_LEVEL) * 100);
+      document.getElementById('progressFill').style.width = pct + "%";
+      document.getElementById('progressLabel').textContent = `Scenario ${currentIndex + 1} of ${QUESTIONS_PER_LEVEL}`;
+      document.getElementById('progressScore').textContent = `Correct: ${sessionCorrect}/${QUESTIONS_PER_LEVEL}`;
+    }
+
+    function renderScenario() {
+      const scenario = sessionScenarios[currentIndex];
+      const content = document.getElementById('scenarioContent');
+
+      const diffBadge = scenario.difficulty
+        ? `<span class="difficulty-badge ${scenario.difficulty}">${scenario.difficulty}</span>` : '';
+      const aiBadge = scenario._aiGenerated ? `<span class="ai-badge">AI Generated</span>` : '';
+
+      document.getElementById('scenarioProgress').innerHTML =
+        `Scenario ${currentIndex + 1} of ${QUESTIONS_PER_LEVEL}${diffBadge}${aiBadge}`;
+
+      let html = '';
+
+      if (currentCategory === 'email') {
+        const r = scenario.render;
+        html = `
+          <div class="email-box">
+            <div class="meta">
+              <div><b>From:</b> ${r.from} <span class="from-addr">&lt;${r.fromAddr}&gt;</span></div>
+              <div><b>Subject:</b> ${r.subject}</div>
+            </div>
+            <div class="content">${r.body}</div>
+          </div>
+        `;
+      } else if (currentCategory === 'sms') {
+        const r = scenario.render;
+        html = `
+          <div class="sms-frame">
+            <div class="sms-sender">${r.sender}</div>
+            <div class="sms-bubble">${r.text}</div>
+          </div>
+        `;
+      } else if (currentCategory === 'call') {
+        const r = scenario.render;
+        let lines = r.transcript.map(l =>
+          `<div class="line"><b>${l.speaker}:</b> ${l.text}</div>`
+        ).join('');
+        html = `
+          <div class="call-frame">
+            <div class="caller-info">
+              <span class="dot"></span>
+              <span>${r.callerName} — ${r.callerNumber}</span>
+            </div>
+            ${lines}
+          </div>
+        `;
+      }
+
+      content.innerHTML = html;
+
+      answered = false;
+      document.getElementById('btnReal').disabled = false;
+      document.getElementById('btnFake').disabled = false;
+      document.getElementById('resultCard').className = 'result-card';
+      document.getElementById('resultCard').style.display = 'none';
+      document.getElementById('nextBtn').style.display = 'none';
+      document.getElementById('nextBtn').disabled = false;
+      document.getElementById('doneCard').style.display = 'none';
+      document.getElementById('scenarioCard').style.display = 'block';
+      updateProgressUI();
+    }
+
+    function submitAnswer(userChoice) {
+      if (answered) return;
+      answered = true;
+
+      const scenario = sessionScenarios[currentIndex];
+      const correctAnswer = scenario.isReal ? 'real' : 'fake';
+      const isCorrect = (userChoice === correctAnswer);
+
+      document.getElementById('btnReal').disabled = true;
+      document.getElementById('btnFake').disabled = true;
+
+      const resultCard = document.getElementById('resultCard');
+      const verdictText = document.getElementById('verdictText');
+      const explanationText = document.getElementById('explanationText');
+
+      resultCard.style.display = 'block';
+      resultCard.className = 'result-card ' + (isCorrect ? 'correct' : 'incorrect');
+
+      const correctLabel = scenario.isReal ? 'Real' : 'Fake';
+      verdictText.textContent = isCorrect
+        ? `Correct — this was ${correctLabel}`
+        : `Not quite — this was actually ${correctLabel}`;
+
+      explanationText.textContent = scenario.explanation;
+
+      if (isCorrect) {
+        sessionCorrect += 1;
+        incrementScore();
+      }
+
+      updateProgressUI();
+      document.getElementById('nextBtn').style.display = 'block';
+      document.getElementById('nextBtn').textContent =
+        (currentIndex + 1 >= QUESTIONS_PER_LEVEL) ? "See Results →" : "Next Scenario →";
+    }
+
+    async function nextScenario() {
+      const nextBtn = document.getElementById('nextBtn');
+      currentIndex += 1;
+
+      if (currentIndex >= QUESTIONS_PER_LEVEL) {
+        finishLevel();
+        return;
+      }
+
+      nextBtn.disabled = true;
+      await loadScenario(currentIndex);
+      nextBtn.disabled = false;
+    }
+
+    function finishLevel() {
+      document.getElementById('scenarioCard').style.display = 'none';
+      const doneCard = document.getElementById('doneCard');
+      doneCard.style.display = 'block';
+
+      const passed = (sessionCorrect / QUESTIONS_PER_LEVEL) >= PASS_THRESHOLD;
+      const curLevel = levels[currentCategory] || 1;
+      const resultText = document.getElementById('levelResultText');
+      const doneText = document.getElementById('doneText');
+
+      if (passed && curLevel < MAX_LEVEL) {
+        levels[currentCategory] = curLevel + 1;
+        resultText.textContent = `Level ${curLevel} Passed! Advancing to Level ${levels[currentCategory]}.`;
+        resultText.className = "level-result pass";
+      } else if (passed && curLevel >= MAX_LEVEL) {
+        resultText.textContent = `Level ${MAX_LEVEL} Passed — Max Level Reached!`;
+        resultText.className = "level-result pass";
+      } else {
+        resultText.textContent = `Level ${curLevel} — Not Quite Yet`;
+        resultText.className = "level-result fail";
+      }
+
+      doneText.textContent = `You scored ${sessionCorrect}/${QUESTIONS_PER_LEVEL} at ${DIFFICULTY_BY_LEVEL[Math.min(curLevel, MAX_LEVEL)]} difficulty. Total score: ${currentScore}.`;
+
+      updateScoreDisplay();
+      persistProgress();
+    }
+
+    function restartCategory() {
+      startLevelSession();
+    }
+
+    function switchCategory(category) {
+      currentCategory = category;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.category === category);
+      });
+
+      startLevelSession();
+    }
+  </script>
+
+</body>
+</html>
