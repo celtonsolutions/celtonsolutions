@@ -8,7 +8,7 @@ Celton Solutions was started by four 8th-grade students who wanted to build real
 - 📋 Register a project: [tally.so/r/PdL4QB](https://tally.so/r/PdL4QB)
 
 ---
-
+ 
 ## 🛠 What we do
 
 Full-service project delivery — strategy, design, and engineering under one roof so nothing gets lost between handoffs.
